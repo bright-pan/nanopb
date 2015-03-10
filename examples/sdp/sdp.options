@@ -1,0 +1,17 @@
+LoginRequest.id					max_size:16
+LoginRequest.k1         		max_size:16
+LoginRequest.k0         		max_size:16
+
+PhoneAddRequest.number			max_size:16
+PhoneModifyRequest.number		max_size:16
+KeyAddRequest.weekly			max_size:16
+KeyAddRequest.code				max_size:16
+KeyModifyRequest.weekly			max_size:16
+KeyModifyRequest.code			max_size:16
+AccountAddRequest.name			max_size:16
+AccountModifyRequest.name		max_size:16
+PasswordRequest.k0 				max_size:16
+AccountMapSyncRequest.map		max_size:512
+KeyMapSyncRequest.map			max_size:512
+PhoneMapSyncRequest.map			max_size:512
+LogMapSyncRequest.map			max_size:512

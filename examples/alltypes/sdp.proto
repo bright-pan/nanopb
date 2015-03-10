@@ -1,0 +1,704 @@
+enum LOGIN_STATUS_TYPE
+{
+    LOGIN_STATUS_UNKOWN = 101;//未知状态
+    LOGIN_STATUS_SUCCESS = 102;//成功状态
+    LOGIN_STATUS_ID_INEXIST = 103;//ID不存在
+    LOGIN_STATUS_ENCODE_EXCEPTION = 104;//编码异常
+}
+
+message LoginRequest
+{
+    optional bytes id = 1;//终端ID
+    optional bytes k1 = 2;//终端密码K1
+    optional fixed32 version = 3;//终端版本号
+    optional bytes k0 = 4;//终端密码K0
+}
+
+message LoginResponse
+{
+    optional LOGIN_STATUS_TYPE status = 1;//登录状态
+    optional fixed32 server_time = 2;//服务器时间（格林威治）
+}
+
+message LogoutRequest
+{
+}
+message LogoutResponse
+{
+}
+message KeepAliveRequest
+{
+}
+message KeepAliveResponse
+{
+}
+/* 工作告警类型 */
+enum WORK_ALARM_TYPE
+{
+    WORK_ALARM_UNKOWN = 0;//未知
+    WORK_ALARM_CAMERA_COVER = 101;//摄像头被遮挡
+    WORK_ALARM_ILLEGAL_INSERT = 102;//异物插入
+    WORK_ALARM_TEMPERATURE = 103;//温度报警（切割门锁）
+    WORK_ALARM_GAS = 104;//火灾烟雾报警
+    WORK_ALARM_FPRINT_ERROR = 105;//输入指纹错误
+    WORK_ALARM_KEY_ERROR = 106;//输入密码错误
+    WORK_ALARM_EMERGECY = 107;//紧急状态
+}
+/* 锁状态 */
+enum LOCK_STATUS_TYPE
+{
+    LOCK_STATUS_UNKOWN = 0;//未知
+    LOCK_STATUS_CLOSE = 101;//闭锁状态
+    LOCK_STATUS_OPEN = 102;//开锁状态
+}
+
+message WorkAlarmRequest
+{
+    optional WORK_ALARM_TYPE type = 1;//告警类型
+    optional LOCK_STATUS_TYPE status = 2;//锁状态
+    optional fixed32 occurred_time = 3;//发生时间（格林威治）
+}
+message WorkAlarmResponse
+{
+}
+/* 工作告警类型 */
+enum FAULT_ALARM_TYPE
+{
+    FAULT_ALARM_UNKOWN = 0;//未知
+    FAULT_ALARM_CAMERA = 101;//摄像头模块故障
+    FAULT_ALARM_RFID = 102;//RFID模块故障
+    FAULT_ALARM_TEMPERATURE = 103;//温度传感器故障
+    FAULT_ALARM_GSM = 104;//GSM模块故障
+    FAULT_ALARM_FPRINT = 105;//指纹模块故障
+    FAULT_ALARM_MOTOR = 106;//马达故障
+}
+/* 故障告警请求 */
+message FaultAlarmRequest
+{
+    optional FAULT_ALARM_TYPE type = 1;//告警类型
+    optional LOCK_STATUS_TYPE status = 2;//锁状态
+    optional fixed32 occurred_time = 3;//发生时间（格林威治）
+}
+message FaultAlarmResponse
+{
+}
+
+/* 电池状态类型 */
+enum BATTERY_STATUS_TYPE
+{
+    BATTERY_STATUS_UNKOWN = 0;//未知
+    BATTERY_STATUS_SUPPLY = 101;//电池供电
+    BATTERY_STATUS_50P = 102;//剩余50%
+    BATTERY_STATUS_20P = 103;//剩余20%
+    BATTERY_STATUS_5P = 104;//剩余5%
+}
+/* 电池请求 */
+message BatteryRequest
+{
+    optional BATTERY_STATUS_TYPE status = 1;//电池状态
+    optional fixed32 capacity = 2;//电池容量
+    optional fixed32 occurred_time = 3;//发生时间（格林威治）
+}
+message BatteryResponse
+{
+}
+/* 开门方式类型 */
+enum OPEN_PATTERN_TYPE
+{
+    OPEN_PATTERN_UNKOWN = 0;//未知
+    OPEN_PATTERN_KEY = 101;//密码开启
+    OPEN_PATTERN_RFID = 102;//RFID 开启
+    OPEN_PATTERN_FPRINT = 103;//指纹
+    OPEN_PATTERN_REMOTE = 104;//远程
+}
+/* 开门请求 */
+message OpenRequest
+{
+    optional OPEN_PATTERN_TYPE type = 1; //开门方式
+    optional fixed32 account_id = 2;//账户 ID
+    optional fixed32 key_id = 3;//钥匙 ID
+    optional LOCK_STATUS_TYPE status = 4; //锁状态
+    optional fixed32 occurred_time = 5; //发生时间（格林威治）
+}
+
+message OpenResponse
+{
+}
+
+enum PHONE_AUTH_TYPE
+{
+	PHONE_AUTH_INVALID= 0;//无任何权限（默认）
+	PHONE_AUTH_CALL=101;//可以接电话
+	PHONE_AUTH_SMS=102;//可以发短信
+}
+
+enum PHONE_STATUS_TYPE
+{
+	PHONE_STATUS_INVALID= 0;//无任何权限（默认）
+	PHONE_STATUS_SUCCESS=101;//成功
+	PHONE_STATUS_LATEST=102;//已经更新
+}
+
+message PhoneAddRequest
+{
+	optional fixed32 id = 1;//电话序号索引
+	optional PHONE_AUTH_TYPE type = 2;//电话权限
+	optional string number = 3;//电话号码
+	optional fixed32 occurred_time = 4;//发生时间
+}
+
+message PhoneModifyRequest
+{
+	optional fixed32 id = 1;//电话序号索引
+	optional PHONE_AUTH_TYPE type = 2;//电话权限
+	optional string number = 3;//电话号码
+	optional fixed32 occurred_time = 4;//发生时间
+}
+
+message PhoneDeleteRequest
+{
+	optional fixed32 id = 1;//电话序号索引
+	optional fixed32 occurred_time = 2;//发生时间
+}
+
+message PhoneAddResponse
+{
+	optional PHONE_STATUS_TYPE status = 1;//响应状态
+	optional fixed32 id = 2;//电话序号索引
+}
+
+message PhoneModifyResponse
+{
+	optional PHONE_STATUS_TYPE status = 1;//响应状态
+	optional fixed32 id = 2;//电话序号索引
+}
+
+message PhoneDeleteResponse
+{
+	optional PHONE_STATUS_TYPE status = 1;//响应状态
+	optional fixed32 id = 2;//电话序号索引
+}
+
+enum KEY_TYPE
+{
+	KEY_INVALID= 0;//无效类型
+	KEY_FPRINT = 1;//指纹
+	KEY_RFID = 2;//RFID
+	KEY_KBOARD = 3;//密码
+}
+
+enum KEY_AUTH_TYPE
+{
+	KEY_AUTH_INVALID = 0;//无效（默认）
+	KEY_AUTH_FOREVER = 1;//永久授权
+	KEY_AUTH_ONCE = 2;//一次性授权
+	KEY_AUTH_WEEKLY = 3;//按周授权
+}
+enum KEY_STATUS_TYPE
+{
+	KEY_STATUS_INVALID= 0;//无任何权限（默认）
+	KEY_STATUS_SUCCESS=101;//成功
+	KEY_STATUS_LATEST=102;//已经更新
+}
+message KeyAddRequest
+{
+	optional fixed32 id = 1;//钥匙序号索引
+	optional KEY_TYPE key_type = 2;//钥匙类型
+	optional fixed32 occurred_time = 3;//发生时间
+	optional KEY_AUTH_TYPE auth_type = 4;//钥匙权限
+	optional bytes weekly = 5;//周授权
+	optional fixed32 start_time = 6;//发生时间
+	optional fixed32 end_time = 7;//发生时间
+	optional bytes code = 8;//钥匙编码
+}
+
+message KeyModifyRequest
+{
+	optional fixed32 id = 1;//序号索引
+	optional KEY_TYPE key_type = 2;//钥匙类型
+	optional fixed32 occurred_time = 3;//发生时间
+	optional KEY_AUTH_TYPE auth_type = 4;//钥匙权限
+	optional bytes weekly = 5;//周授权
+	optional fixed32 start_time = 6;//发生时间
+	optional fixed32 end_time = 7;//发生时间
+	optional bytes code = 8;//钥匙编码
+}
+
+message KeyDeleteRequest
+{
+	optional fixed32 id = 1;//序号索引
+	optional fixed32 occurred_time = 2;//发生时间
+}
+
+message KeyAddResponse
+{
+	optional KEY_STATUS_TYPE status = 1;//响应状态
+	optional fixed32 id = 2;//序号索引
+}
+message KeyModifyResponse
+{
+	optional KEY_STATUS_TYPE status = 1;//响应状态
+	optional fixed32 id = 2;//序号索引
+}
+message KeyDeleteResponse
+{
+	optional KEY_STATUS_TYPE status = 1;//响应状态
+	optional fixed32 id = 2;//序号索引
+}
+
+enum ACCOUNT_STATUS_TYPE
+{
+	ACCOUNT_STATUS_INVALID = 0;//无效
+	ACCOUNT_STATUS_SUCCESS=101;//成功
+	ACCOUNT_STATUS_LATEST=102;//已经更新
+}
+message AccountAddRequest
+{
+    optional fixed32 id = 1;//序号索引
+    optional string name = 2;//名称
+	optional fixed32 occurred_time = 3;//发生时间
+}
+
+message AccountAddResponse
+{
+	optional ACCOUNT_STATUS_TYPE status = 1;//响应状态
+	optional fixed32 id = 2;//序号索引
+}
+
+message AccountModifyRequest
+{
+    optional fixed32 id = 1;//序号索引
+    optional string name = 2;//名称
+	optional fixed32 occurred_time = 3;//发生时间
+}
+
+message AccountModifyResponse
+{
+	optional ACCOUNT_STATUS_TYPE status = 1;//响应状态
+	optional fixed32 id = 2;//序号索引
+}
+
+message AccountDeleteRequest
+{
+	optional fixed32 id = 1;//序号索引
+	optional fixed32 occurred_time = 2;//发生时间
+}
+
+message AccountDeleteResponse
+{
+	optional ACCOUNT_STATUS_TYPE status = 1;//响应状态
+	optional fixed32 id = 2;//序号索引
+}
+
+message AccountToPhoneRequest
+{
+    optional fixed32 account_id = 1;//账户序号索引
+    optional fixed32 phone_id = 2;//电话序号索引
+    optional fixed32 occurred_time = 3;//发生时间
+}
+
+message AccountToKeyRequest
+{
+    optional fixed32 account_id = 1;//账户序号索引
+    optional fixed32 key_id = 2;//钥匙序号索引
+	optional fixed32 occurred_time = 3;//发生时间
+}
+
+message AccountToPhoneResponse
+{
+	optional ACCOUNT_STATUS_TYPE status = 1;//响应状态
+	optional fixed32 id = 2;//序号索引
+}
+message AccountToKeyResponse
+{
+	optional ACCOUNT_STATUS_TYPE status = 1;//响应状态
+	optional fixed32 id = 2;//序号索引
+}
+
+message TimeRequest
+{
+    optional fixed32 time = 1;//时间
+}
+message TimeResponse
+{
+	optional fixed32 time = 1;//时间
+}
+message PasswordRequest
+{
+    optional bytes k0 = 1;//K0密码
+}
+
+
+message PasswordResponse
+{
+}
+
+enum MOTOR_STATUS_TYPE
+{
+    MOTOR_STATUS_INVALID = 0;//无效
+    MOTOR_STATUS_OPEN = 101;//开
+    MOTOR_STATUS_CLOSE = 102;//关
+}
+message MotorRequest
+{
+    optional MOTOR_STATUS_TYPE status = 1;//电机动作
+}
+message MotorResponse
+{
+    optional MOTOR_STATUS_TYPE status = 1;//电机状态
+}
+enum ACCOUNT_MAP_STATUS_TYPE
+{
+	ACCOUNT_MAP_STATUS_INVALID= 0;//无效
+	ACCOUNT_MAP_STATUS_LATEST=101;//最新的
+	ACCOUNT_MAP_STATUS_UPGRADE=102;//需要更新
+	ACCOUNT_MAP_STATUS_FAILURE=103;//失败
+}
+message AccountMapCheckRequest
+{
+	optional fixed32 time = 1;//操作时间
+}
+message AccountMapCheckResponse
+{
+	optional ACCOUNT_MAP_STATUS_TYPE status = 1;//操作状态
+}
+message AccountMapSyncRequest
+{
+	optional fixed32 time = 1;//操作时间
+	optional bytes map = 2;//映射数据
+
+}
+
+message AccountMapSyncResponse
+{
+    optional ACCOUNT_MAP_STATUS_TYPE status = 1;//操作状态
+}
+message AccountCheckRequest
+{
+	optional fixed32 time = 1;//操作时间
+	optional fixed32 id = 2;//序号索引
+}
+message AccountCheckResponse
+{
+	optional ACCOUNT_MAP_STATUS_TYPE status = 1;//操作状态
+}
+
+enum KEY_MAP_STATUS_TYPE
+{
+	KEY_MAP_STATUS_INVALID= 0;//无效
+	KEY_MAP_STATUS_LATEST=101;//最新的
+	KEY_MAP_STATUS_UPGRADE=102;//需要更新
+	KEY_MAP_STATUS_FAILURE=103;//失败
+}
+message KeyMapCheckRequest
+{
+	optional fixed32 time = 1;//操作时间
+}
+message KeyMapCheckResponse
+{
+	optional KEY_MAP_STATUS_TYPE status = 1;//操作状态
+}
+message KeyMapSyncRequest
+{
+	optional fixed32 time = 1;//操作时间
+	optional bytes map = 2;//映射数据
+}
+message KeyMapSyncResponse
+{
+	optional KEY_MAP_STATUS_TYPE status = 1;//操作状态
+}
+message KeyCheckRequest
+{
+	optional fixed32 time = 1;//操作时间
+	optional fixed32 id = 2;//序号索引
+}
+message KeyCheckResponse
+{
+	optional KEY_MAP_STATUS_TYPE status = 1;//操作状态
+}
+
+enum PHONE_MAP_STATUS_TYPE
+{
+	PHONE_MAP_STATUS_INVALID= 0;//无效
+	PHONE_MAP_STATUS_LATEST=101;//最新的
+	PHONE_MAP_STATUS_UPGRADE=102;//需要更新
+	PHONE_MAP_STATUS_FAILURE=103;//失败
+}
+message PhoneMapCheckRequest
+{
+	optional fixed32 time = 1;//操作时间
+}
+message PhoneMapCheckResponse
+{
+	optional PHONE_MAP_STATUS_TYPE status = 1;//操作状态
+}
+message PhoneMapSyncRequest
+{
+	optional fixed32 time = 1;//操作时间
+	optional bytes map = 2;//映射数据
+}
+message PhoneMapSyncResponse
+{
+	optional PHONE_MAP_STATUS_TYPE status = 1;//操作状态
+}
+message PhoneCheckRequest
+{
+	optional fixed32 time = 1;//操作时间
+	optional fixed32 id = 2;//序号索引
+}
+message PhoneCheckResponse
+{
+	optional PHONE_MAP_STATUS_TYPE status = 1;//操作状态
+}
+
+enum LOG_MAP_STATUS_TYPE
+{
+	LOG_MAP_STATUS_INVALID= 0;//无效
+	LOG_MAP_STATUS_LATEST=101;//最新的
+	LOG_MAP_STATUS_UPGRADE=102;//需要更新
+	LOG_MAP_STATUS_FAILURE=103;//失败
+}
+message LogMapCheckRequest
+{
+	optional fixed32 time = 1;//操作时间
+}
+message LogMapCheckResponse
+{
+	optional LOG_MAP_STATUS_TYPE status = 1;//操作状态
+}
+message LogMapSyncRequest
+{
+	optional fixed32 time = 1;//操作时间
+	optional bytes map = 2;//映射数据
+}
+message LogMapSyncResponse
+{
+	optional LOG_MAP_STATUS_TYPE status = 1;//操作状态
+}
+message LogCheckRequest
+{
+	optional fixed32 time = 1;//操作时间
+	optional fixed32 id = 2;//序号索引
+}
+message LogCheckResponse
+{
+	optional LOG_MAP_STATUS_TYPE status = 1;//操作状态
+}
+enum MSG
+{
+    UNKOWN = 0;
+    REQ_LOGIN  = 10001;
+    REP_LOGIN  = 10002;
+    REQ_LOGOUT  = 10003;
+    REP_LOGOUT  = 10004;
+    REQ_KEEP_ALIVE = 10005;
+    REP_KEEP_ALIVE = 10006;
+    REQ_WORK_ALARM  = 10007;
+    REP_WORK_ALARM  = 10008;
+    REQ_FAULT_ALARM  = 10009;
+    REP_FAULT_ALARM  = 10010;
+    REQ_BATTERY  = 10011;
+    REP_BATTERY = 10012;
+    REQ_OPEN  = 10013;
+    REP_OPEN  = 10014;
+    REQ_PHONE_ADD  = 10015;
+    REP_PHONE_ADD = 10016;
+    REQ_PHONE_MODIFY  = 10017;
+    REP_PHONE_MODIFY = 10018;
+    REQ_PHONE_DELETE = 10019;
+    REP_PHONE_DELETE = 10020;
+    REQ_PARAMETERS = 10021;
+    REP_PARAMETERS = 10022;
+    REQ_TIME = 10025;
+    REP_TIME = 10026;
+    REQ_UPGRADE = 10027;
+    REP_UPGRADE = 10028;
+    REQ_MOTOR = 10029;
+    REP_MOTOR = 10030;
+    REQ_ACCOUNT_ADD = 10031;
+    REP_ACCOUNT_ADD = 10032;
+    REQ_ACCOUNT_MODIFY = 10033;
+    REP_ACCOUNT_MODIFY = 10034;
+    REQ_ACCOUNT_DELETE = 10035;
+    REP_ACCOUNT_DELETE = 10036;
+    REQ_FILE_INFO = 10037;
+    REP_FILE_INFO = 10038;
+    REQ_FILE_DATA = 10039;
+    REP_FILE_DATA = 10040;
+    REQ_PASSWORD = 10041;
+    REP_PASSWORD = 10042;
+    REQ_LOG_MAP_CHECK = 10043;
+    REP_LOG_MAP_CHECK = 10044;
+    REQ_LOG_MAP_SYNC = 10045;
+    REP_LOG_MAP_SYNC = 10046;
+    REQ_LOG_CHECK = 10047;
+    REP_LOG_CHECK = 10048;
+
+    REQ_KEY_MAP_CHECK = 10049;
+    REP_KEY_MAP_CHECK = 10050;
+    REQ_KEY_MAP_SYNC = 10051;
+    REP_KEY_MAP_SYNC = 10052;
+    REQ_KEY_CHECK = 10053;
+    REP_KEY_CHECK = 10054;
+
+    REQ_PHONE_MAP_CHECK = 10055;
+    REP_PHONE_MAP_CHECK = 10056;
+    REQ_PHONE_MAP_SYNC = 10057;
+    REP_PHONE_MAP_SYNC = 10058;
+    REQ_PHONE_CHECK = 10059;
+    REP_PHONE_CHECK = 10060;
+    REQ_SYNC = 10061;
+    REP_SYNC = 10062;
+
+
+    REQ_ACCOUNT_MAP_CHECK = 10063;
+    REP_ACCOUNT_MAP_CHECK = 10064;
+    REQ_ACCOUNT_MAP_SYNC = 10065;
+    REP_ACCOUNT_MAP_SYNC = 10066;
+    REQ_ACCOUNT_CHECK = 10067;
+    REP_ACCOUNT_CHECK = 10068;
+    REQ_ACCOUNT_TO_KEY = 10069;
+    REP_ACCOUNT_TO_KEY = 10070;
+    REQ_ACCOUNT_TO_PHONE = 10071;
+    REP_ACCOUNT_TO_PHONE = 10072;
+
+
+    REQ_KEY_ADD = 10073;
+    REP_KEY_ADD = 10074;
+    REQ_KEY_MODIFY = 10075;
+    REP_KEY_MODIFY = 10076;
+    REQ_KEY_DELETE = 10077;
+    REP_KEY_DELETE = 10078;
+    REQ_WELCOME_NOTIFICATION = 20001;
+}
+
+message Request
+{
+    optional LoginRequest login = 1;
+
+    optional LogoutRequest logout = 2;
+    optional KeepAliveRequest keepalive = 3;
+    optional WorkAlarmRequest workalarm = 4;
+    optional FaultAlarmRequest faultalarm = 5;
+    optional BatteryRequest battery = 6;
+    optional OpenRequest open = 7;
+    //optional ParametersRequest parameters = 8;
+    optional TimeRequest time = 9;
+    //optional UpgradeRequest upgrade = 10;
+    optional MotorRequest motor = 11;
+    //optional FileInfoRequest file_info = 12;//文件信息
+    //optional FileDataRequest file_data = 13;//文件数据
+    optional AccountAddRequest account_add = 14;
+    optional AccountModifyRequest account_modify = 15;
+    optional AccountDeleteRequest account_delete = 16;
+    optional PhoneAddRequest phone_add = 17;
+    optional PhoneModifyRequest phone_modify = 18;
+    optional PhoneDeleteRequest phone_delete = 19;
+    optional KeyAddRequest key_add = 20;
+    optional KeyModifyRequest key_modify = 21;
+    optional KeyDeleteRequest key_delete = 22;
+    optional PasswordRequest password = 23;
+    optional LogMapCheckRequest log_map_check = 24;
+    optional LogMapSyncRequest log_map_sync = 25;
+    optional LogCheckRequest log_check = 26;
+    optional AccountMapCheckRequest account_map_check = 27;
+    optional AccountMapSyncRequest account_map_sync = 28;
+    optional AccountCheckRequest account_check = 29;
+    optional KeyMapCheckRequest key_map_check = 30;
+    optional KeyMapSyncRequest key_map_sync = 31;
+    optional KeyCheckRequest key_check = 32;
+    optional PhoneMapCheckRequest phone_map_check = 33;
+    optional PhoneMapSyncRequest phone_map_sync = 34;
+    optional PhoneCheckRequest phone_check = 35;
+    //optional SyncRequest sync = 36;
+    optional AccountToPhoneRequest account_to_phone = 37;
+    optional AccountToKeyRequest account_to_key = 38;
+
+}
+/*与Request作用相同，把所有的XxxxResponse消息集合在一起，当作联合体使用，不过额外多了几个字段用于表示应答的结果*/
+message Response
+{
+    //true表示应答成功，false表示应答失败
+    required bool result = 1;
+    // 一个请求可以包含多个应答，用于指示是否为最后一个应答
+    required bool last_response = 2;
+    // result == false时，用于描述错误信息
+    optional LoginResponse login = 3;
+    optional LogoutResponse logout = 4;
+    optional KeepAliveResponse keepalive = 5;
+    optional WorkAlarmResponse workalarm = 6;
+    optional FaultAlarmResponse faultalarm = 7;
+    optional BatteryResponse battery = 8;
+    optional OpenResponse open = 9;
+    //optional ParametersResponse parameters = 10;
+    optional TimeResponse time = 12;
+    //optional UpgradeResponse upgrade = 13;
+    optional MotorResponse motor = 14;
+    //optional FileInfoResponse file_info = 15;//文件信息
+    //optional FileDataResponse file_data = 16;//文件数据
+    optional AccountAddResponse account_add = 17;
+    optional AccountModifyResponse account_modify = 18;
+    optional AccountDeleteResponse account_delete = 19;
+    optional PhoneAddResponse phone_add = 20;
+    optional PhoneModifyResponse phone_modify = 21;
+    optional PhoneDeleteResponse phone_delete = 22;
+    optional KeyAddResponse key_add = 23;
+    optional KeyModifyResponse key_modify = 24;
+    optional KeyDeleteResponse key_delete = 25;
+    optional PasswordResponse password = 26;
+    optional LogMapCheckResponse log_map_check = 27;
+    optional LogMapSyncResponse log_map_sync = 28;
+    optional LogCheckResponse log_check = 29;
+    optional AccountMapCheckResponse account_map_check = 30;
+    optional AccountMapSyncResponse account_map_sync = 31;
+    optional AccountCheckResponse account_check = 32;
+    optional KeyMapCheckResponse key_map_check = 33;
+    optional KeyMapSyncResponse key_map_sync = 34;
+    optional KeyCheckResponse key_check = 35;
+    optional PhoneMapCheckResponse phone_map_check = 36;
+    optional PhoneMapSyncResponse phone_map_sync = 37;
+    optional PhoneCheckResponse phone_check = 38;
+    //optional SyncResponse sync = 39;
+    optional AccountToPhoneResponse account_to_phone = 40;
+    optional AccountToKeyResponse account_to_key = 41;
+}
+/* 所有的XxxxxNotification消息集合在一起当作联合体使用. 
+message Notification
+{
+    optional bytes welcome = 1;
+}
+*/
+/* 顶层消息，包含所有的Request，Response，Notification，具体包含哪个消息又 MSG msg_type字段决定，
+程序逻辑去保证msg_type和具体的消息进行匹配 */
+message Message
+{
+    optional MSG msg_type = 1;
+    /*
+    消息系列号，主要用于Request和Response，Response的值必须和Request相同，
+    使得发送端可以进行事务匹配处理。
+    */
+    optional fixed32 sequence = 2;
+    optional fixed32 session_id = 3;
+    optional Request request  = 4;
+    optional Response response = 5;
+    //optional Notification notification = 6;
+}
+/*
+LoginRequest.id         max_size:16
+LoginRequest.k1         max_size:16
+LoginRequest.k0         max_size:16
+
+PhoneAddRequest.number			max_size:16
+PhoneAddModify.number			max_size:16
+KeyAddRequest.weekly			max_size:16
+KeyAddRequest.code				max_size:16
+KeyModifyRequest.weekly			max_size:16
+KeyModifyRequest.code			max_size:16
+AccountAddRequest.name			max_size:16
+AccountModifyRequest.name		max_size:16
+PasswordRequest.k0 				max_size:16
+AccountMapSyncRequest.map		max_size:512
+KeyMapSyncRequest.map			max_size:512
+PhoneMapSyncRequest.map			max_size:512
+LogMapSyncRequest.map			max_size:512
+*/
